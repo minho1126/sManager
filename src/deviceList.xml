@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<devices>
+	<device type="SPO2" >
+		<measure value="bpm" type="double" upperRange="127" lowerRange="0" />
+		<measure value="oxygenlevel" type="double" upperRange="127" lowerRange="0"/>
+	</device>
+	<device type="BP" >
+		<measure value="bpm" type="double" upperRange="127" lowerRange="0"/>
+		<measure value="bloodpressure" type="double" upperRange="127" lowerRange="0"/>
+	</device>
+</devices>

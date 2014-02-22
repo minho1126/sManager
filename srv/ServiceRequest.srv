@@ -1,0 +1,11 @@
+string Request
+string type
+uint32 id
+uint32 bid
+uint32 uid
+---
+string Response
+string type
+uint32 id
+uint32 bid
+uint32 uid

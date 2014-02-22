@@ -1,0 +1,7 @@
+string Name
+string type
+string ipAddress
+uint32 id
+uint32 bid
+---
+int32 manager_Id

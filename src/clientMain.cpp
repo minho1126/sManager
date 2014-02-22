@@ -1,0 +1,51 @@
+#include <iostream>
+#include <cstdio>
+#include "ros/ros.h"
+#include <cstdlib>
+#include "SPDriver.hpp"
+#include "std_msgs/String.h"
+#include "Drivers/RegisterMessage.h"
+#include "Drivers/Checker.h"
+#include "Drivers/ServiceRequest.h"
+#include "Drivers/data.h"
+#include <csignal>
+//http://www.thomaswhitton.com/blog/2013/06/27/json-c-plus-plus-examples/
+using namespace std;
+
+void threadCloser(int signum){
+	cout<<"closing the thread"<<endl;
+	pthread_exit(NULL);
+	exit(0);
+}
+
+void *fake_call(void* conman){
+	ROS_INFO("Starting fake call");
+	signal(SIGINT,threadCloser);
+	SPDriver* cm=(SPDriver*)conman;
+	cm->StartService();
+	pthread_exit(NULL);
+}
+
+int main(int argc,char **argv){
+	SPDriver conman;
+	ros::init(argc,argv,conman.getServiceName());
+	ros::NodeHandle n,m;
+	ros::ServiceClient client=n.serviceClient<Drivers::RegisterMessage>("driver_request");
+	if(!conman.Register(client)){
+		exit(0);
+	}
+	ROS_INFO("client registering SPO2_request");
+	ros::ServiceServer services=n.advertiseService("SPO2_request",&SPDriver::InitialiseService,&conman);
+	ros::Rate loop_rate(10);
+	while(1){
+		if(conman.is_Started()){
+			ROS_INFO("ONLY ONCE");
+			pthread_t threads[1];
+			pthread_create(&threads[0], NULL, fake_call,(void*)&conman);
+		}
+		Drivers::data msg;
+		msg.data="aaa";
+		ros::spinOnce();
+	}
+	return 0;
+}
