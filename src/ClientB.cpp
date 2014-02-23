@@ -2,14 +2,14 @@
 #include <cstdio>
 #include "ros/ros.h"
 #include <cstdlib>
-#include "Drivers/RegisterMessage.h"
+#include "smanager/RegisterMessage.h"
 #include "SensorManager.hpp"
-#include "Drivers/data.h"
+#include "smanager/data.h"
 #include <pthread.h>
 #include <sstream>
-#include "Drivers/ServiceRequest.h"
+#include "smanager/ServiceRequest.h"
 
-void Resultcallback(Drivers::data msg){
+void Resultcallback(smanager::data msg){
 	ROS_INFO("%s",msg.data.c_str());
 }
 
@@ -19,9 +19,9 @@ int main(int argc,char **argv){
 		ROS_INFO("starting service");
 		ros::NodeHandle n;
 		//alocateService
-		ros::ServiceClient client =n.serviceClient<Drivers::ServiceRequest>("request_listener");
+		ros::ServiceClient client =n.serviceClient<smanager::ServiceRequest>("request_listener");
 		//make message
-		Drivers::ServiceRequest msg;
+		smanager::ServiceRequest msg;
 		msg.request.Request="Request";
 		msg.request.type="BP";
 		msg.request.id=-1;
@@ -98,7 +98,7 @@ int main(int argc,char **argv){
 		}
 		//2nd trial
 		//make message
-		//Drivers::ServiceRequest msg;
+		//smanager::ServiceRequest msg;
 		msg.request.Request="Request";
 		msg.request.type="SPO2";
 		msg.request.id=-1;

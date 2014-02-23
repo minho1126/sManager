@@ -8,10 +8,10 @@
 #include <time.h>
 #include <sys/types.h>
 #include "ros/ros.h"
-#include "Drivers/Checker.h"
-#include "Drivers/RegisterMessage.h"
-#include "Drivers/ServiceRequest.h"
-#include "Drivers/data.h"
+#include "smanager/Checker.h"
+#include "smanager/RegisterMessage.h"
+#include "smanager/ServiceRequest.h"
+#include "smanager/data.h"
 #include <string>
 #include <sstream>
 #include <pthread.h>
@@ -32,7 +32,7 @@ SPDriver::SPDriver(){
 }
 
 void SPDriver::StartService(){
-	Drivers::data msg;
+	smanager::data msg;
 	pthread_t t; 
 	int* i;
 	pthread_create(&t,NULL,&SPDriver::updateReadingsThread,this);
@@ -68,8 +68,8 @@ bool SPDriver::checkDeviceConnection(){
 }
 
 
-bool SPDriver::InitialiseService(Drivers::ServiceRequest::Request &req,
- Drivers::ServiceRequest::Response &res){
+bool SPDriver::InitialiseService(smanager::ServiceRequest::Request &req,
+ smanager::ServiceRequest::Response &res){
 	//request to start
 	if(req.Request.compare("Request")==0){
 		if(!initialisingDevice()){
@@ -83,7 +83,7 @@ bool SPDriver::InitialiseService(Drivers::ServiceRequest::Request &req,
 		stringstream aaa;
 		aaa<<__id;
 		string name=__type+"_"+aaa.str()+"_data";
-		__service_provider=n.advertise<Drivers::data>(name,1000);
+		__service_provider=n.advertise<smanager::data>(name,1000);
 		ROS_INFO("the service is \"%s\"",name.c_str());
 		__provide_Service=true;
 	//request to stop	

@@ -4,8 +4,8 @@
 #include "ros/ros.h"
 #include "Pulsecor.h"
 #include "ConnectionManager.hpp"
-#include "Drivers/Checker.h"
-#include "Drivers/ServiceRequest.h"
+#include "smanager/Checker.h"
+#include "smanager/ServiceRequest.h"
 #include "Jsoncpp/json/writer.h"
 using namespace std;
 
@@ -19,7 +19,7 @@ class BPDriver:public ConnectionManager{
 		void updateReadings();
 		bool terminateService();//needed
 		bool is_Started();
-		bool InitialiseService(Drivers::ServiceRequest::Request &req,Drivers::ServiceRequest::Response &res);//needed
+		bool InitialiseService(smanager::ServiceRequest::Request &req,smanager::ServiceRequest::Response &res);//needed
 		bool initialisingDevice();//needed
 		void stopMeasurement();//needed
 	private:

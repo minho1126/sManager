@@ -3,8 +3,8 @@
 #include <cstdlib>
 #include <cstdio>
 #include <ros/ros.h>
-#include "Drivers/Checker.h"
-#include "Drivers/RegisterMessage.h"
+#include "smanager/Checker.h"
+#include "smanager/RegisterMessage.h"
 #include <map>
 #include <fstream>
 #include <string>
@@ -12,8 +12,8 @@
 #include <sys/types.h>
 #include "tinyxml/tinystr.h"
 #include "tinyxml/tinyxml.h"
-#include "Drivers/ServiceRequest.h"
-#include "Drivers/data.h"
+#include "smanager/ServiceRequest.h"
+#include "smanager/data.h"
 
 using namespace std;
 
@@ -22,7 +22,7 @@ SensorManager::SensorManager(){
 	manager_Id=1;//default case--change later
 }
 
-unsigned int SensorManager::RegisterSensor(Drivers::RegisterMessage::Request req){
+unsigned int SensorManager::RegisterSensor(smanager::RegisterMessage::Request req){
 	if(type_map.find(req.type)==type_map.end()){
 		type_map[req.type]=map<unsigned int,deviceInfo>();
 	}
@@ -43,7 +43,7 @@ unsigned int SensorManager::RegisterSensor(Drivers::RegisterMessage::Request req
 	return 1;
 }
 
-bool SensorManager::foo(Drivers::RegisterMessage::Request &req,Drivers::RegisterMessage::Response &res){
+bool SensorManager::foo(smanager::RegisterMessage::Request &req,smanager::RegisterMessage::Response &res){
 	if(RegisterSensor(req)){
 		res.manager_Id=1;
 		return true;
@@ -54,7 +54,7 @@ bool SensorManager::foo(Drivers::RegisterMessage::Request &req,Drivers::Register
 }
 
 //handles the requests from the client
-bool SensorManager::listenForRequest(Drivers::ServiceRequest::Request &req, Drivers::ServiceRequest::Response &res){
+bool SensorManager::listenForRequest(smanager::ServiceRequest::Request &req, smanager::ServiceRequest::Response &res){
 	ROS_INFO("listening to requests");
 	//request for sensor
 	if(req.Request.compare("Request")==0){
@@ -120,9 +120,9 @@ int SensorManager::startService(deviceInfo& dv,int start){
 	ros::NodeHandle m;
 	//create call to driver
 	ROS_INFO("%s is device info",dv.Servicename.c_str());
-	ros::ServiceClient ServiceRequest=m.serviceClient<Drivers::ServiceRequest>(dv.Servicename+"_request");
+	ros::ServiceClient ServiceRequest=m.serviceClient<smanager::ServiceRequest>(dv.Servicename+"_request");
 	ROS_INFO("registering to \"%s_request\"",dv.Servicename.c_str());
-	Drivers::ServiceRequest srv;
+	smanager::ServiceRequest srv;
 	//what is the request
 	if(start==0){
 		ROS_INFO("request is request");
@@ -247,7 +247,7 @@ deviceInfo& SensorManager::initialiseService(ros::NodeHandle n,string type){
 }
 
 //for testing purpose
-void SensorManager::Resultcallback(Drivers::data msg){
+void SensorManager::Resultcallback(smanager::data msg){
 	ROS_INFO("called");
 	ROS_INFO("%s",msg.data.c_str());
 	ROS_INFO("string length %d",msg.data.length());
@@ -272,8 +272,8 @@ void SensorManager::Ping(){
 			ROS_INFO("pinging service id:%d, sensor bid:%d",iter2->second.id, iter2->second.bid);
 			stringstream aaa;
 			aaa<<iter->first<<"_"<<iter2->second.id<<"_check";//spo2_23840432_check
-			ros::ServiceClient alive=n.serviceClient<Drivers::Checker>(aaa.str());
-			Drivers::Checker ch;
+			ros::ServiceClient alive=n.serviceClient<smanager::Checker>(aaa.str());
+			smanager::Checker ch;
 			if(alive.call(ch)){
 				//skip
 				ROS_INFO("alive");

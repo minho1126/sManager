@@ -2,12 +2,12 @@
 #include <cstdio>
 #include "ros/ros.h"
 #include <cstdlib>
-#include "Drivers/RegisterMessage.h"
+#include "smanager/RegisterMessage.h"
 #include "SensorManager.hpp"
-#include "Drivers/data.h"
+#include "smanager/data.h"
 #include <pthread.h>
 #include <sstream>
-#include "Drivers/ServiceRequest.h"
+#include "smanager/ServiceRequest.h"
 #include <csignal>
 
 

@@ -8,10 +8,10 @@
 #include <time.h>
 #include <sys/types.h>
 #include "ros/ros.h"
-#include "Drivers/Checker.h"
-#include "Drivers/RegisterMessage.h"
-#include "Drivers/ServiceRequest.h"
-#include "Drivers/data.h"
+#include "smanager/Checker.h"
+#include "smanager/RegisterMessage.h"
+#include "smanager/ServiceRequest.h"
+#include "smanager/data.h"
 #include <string>
 #include <sstream>
 #include <pthread.h>
@@ -42,7 +42,7 @@ unsigned int ConnectionManager::generateID(){
 }
 
 bool ConnectionManager::Register(ros::ServiceClient client){
-	Drivers::RegisterMessage srv;
+	smanager::RegisterMessage srv;
 	srv.request.Name=__name;
 	srv.request.type=__type;
 	srv.request.ipAddress=__ipAddress;
@@ -81,8 +81,8 @@ bool ConnectionManager::Register(ros::ServiceClient client){
 	
 }
 
-bool ConnectionManager::RenewRegisteration(Drivers::Checker::Request &req,
- Drivers::Checker::Response &res){
+bool ConnectionManager::RenewRegisteration(smanager::Checker::Request &req,
+ smanager::Checker::Response &res){
 	//check if device is connected
 	if(checkDeviceConnection()){
 		res.check=1;

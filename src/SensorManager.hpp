@@ -1,8 +1,8 @@
 #include <ros/ros.h>
-#include "Drivers/Checker.h"
-#include "Drivers/RegisterMessage.h"
-#include "Drivers/ServiceRequest.h"
-#include "Drivers/data.h"
+#include "smanager/Checker.h"
+#include "smanager/RegisterMessage.h"
+#include "smanager/ServiceRequest.h"
+#include "smanager/data.h"
 #include <map>
 #include <string>
 
@@ -21,17 +21,17 @@ struct deviceInfo{
 class SensorManager{
 	public:
 		SensorManager();
-		unsigned int RegisterSensor(Drivers::RegisterMessage::Request req);
-		bool foo(Drivers::RegisterMessage::Request &req,Drivers::RegisterMessage::Response &res);
+		unsigned int RegisterSensor(smanager::RegisterMessage::Request req);
+		bool foo(smanager::RegisterMessage::Request &req,smanager::RegisterMessage::Response &res);
 		string XmlParser();
-		bool listenForRequest(Drivers::ServiceRequest::Request &req, Drivers::ServiceRequest::Response &res);
+		bool listenForRequest(smanager::ServiceRequest::Request &req, smanager::ServiceRequest::Response &res);
 		int startService(deviceInfo& dv,int start=0);
 		void terminate(deviceInfo& dv);
 		deviceInfo& findAvailable(string type);
 		void listSensors();
 		void listActiveServices();
 		deviceInfo& initialiseService(ros::NodeHandle n,string type);
-		void Resultcallback(Drivers::data msg);
+		void Resultcallback(smanager::data msg);
 		void Ping();
 		void Deregister(string type,unsigned int id);
 		void pause(deviceInfo& dv);

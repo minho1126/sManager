@@ -4,10 +4,10 @@
 #include <cstdlib>
 #include "BPDrivers.hpp"
 #include "std_msgs/String.h"
-#include "Drivers/RegisterMessage.h"
-#include "Drivers/Checker.h"
-#include "Drivers/ServiceRequest.h"
-#include "Drivers/data.h"
+#include "smanager/RegisterMessage.h"
+#include "smanager/Checker.h"
+#include "smanager/ServiceRequest.h"
+#include "smanager/data.h"
 #include <csignal>
 //http://www.thomaswhitton.com/blog/2013/06/27/json-c-plus-plus-examples/
 using namespace std;
@@ -29,7 +29,7 @@ int main(int argc,char **argv){
 	BPDriver conman;
 	ros::init(argc,argv,conman.getServiceName());
 	ros::NodeHandle n,m;
-	ros::ServiceClient client=n.serviceClient<Drivers::RegisterMessage>("driver_request");
+	ros::ServiceClient client=n.serviceClient<smanager::RegisterMessage>("driver_request");
 	if(!conman.Register(client)){
 		exit(0);
 	}
@@ -42,7 +42,7 @@ int main(int argc,char **argv){
 			pthread_t threads[1];
 			pthread_create(&threads[0], NULL, fake_call,(void*)&conman);
 		}
-		Drivers::data msg;
+		smanager::data msg;
 		msg.data="aaa";
 		ros::spinOnce();
 	}

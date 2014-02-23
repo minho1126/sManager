@@ -3,8 +3,8 @@
 #include <vector>	
 #include "ros/ros.h"
 #include "OxySmartSpO2.h"
-#include "Drivers/Checker.h"
-#include "Drivers/ServiceRequest.h"
+#include "smanager/Checker.h"
+#include "smanager/ServiceRequest.h"
 #include "Jsoncpp/json/writer.h"
 using namespace std;
 
@@ -12,12 +12,12 @@ class ConnectionManager{
 	public:
 		ConnectionManager();
 		bool Register(ros::ServiceClient client);//register to the manager
-		bool RenewRegisteration(Drivers::Checker::Request &req, Drivers::Checker::Response &res);
+		bool RenewRegisteration(smanager::Checker::Request &req, smanager::Checker::Response &res);
 		virtual void StartService()=0;
 		virtual bool checkDeviceConnection()=0;//checks device connection
 		unsigned int generateID();
 		string getServiceName();
-		virtual bool InitialiseService(Drivers::ServiceRequest::Request &req,Drivers::ServiceRequest::Response &res)=0;
+		virtual bool InitialiseService(smanager::ServiceRequest::Request &req,smanager::ServiceRequest::Response &res)=0;
 		bool is_Started();
 		int pid;
 		virtual bool terminateService()=0;
