@@ -50,7 +50,7 @@ generate_messages(
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES Drivers
+#  LIBRARIES smanager
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
@@ -67,8 +67,8 @@ include_directories(
 )
 
 ## Declare a cpp library
-# add_library(Drivers
-#   src/${PROJECT_NAME}/Drivers.cpp
+# add_library(smanager
+#   src/${PROJECT_NAME}/smanager.cpp
 # )
 # Declare a cpp executable
 add_executable(managerMain src/managerMain.cpp src/SensorManager.cpp src/tinyxml/tinystr.cpp src/tinyxml/tinyxml.cpp src/tinyxml/tinyxmlerror.cpp src/tinyxml/tinyxmlparser.cpp)
@@ -88,13 +88,13 @@ target_link_libraries(UserB ${catkin_LIBRARIES})
 
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
-add_dependencies(managerMain ${catkin_EXPORTED_TARGETS})#Drivers_generate_messages_cpp)
+add_dependencies(managerMain ${catkin_EXPORTED_TARGETS})#smanager_generate_messages_cpp)
 add_dependencies(clientSP ${catkin_EXPORTED_TARGETS})
 add_dependencies(clientBP ${catkin_EXPORTED_TARGETS})
 add_dependencies(UserA ${catkin_EXPORTED_TARGETS})
 add_dependencies(UserB ${catkin_EXPORTED_TARGETS})
 ## Specify libraries to link a library or executable target against
-# target_link_libraries(Drivers_node
+# target_link_libraries(smanager_node
 #   ${catkin_LIBRARIES}
 # )
 
@@ -113,7 +113,7 @@ add_dependencies(UserB ${catkin_EXPORTED_TARGETS})
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS Drivers Drivers_node
+# install(TARGETS smanager smanager_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -138,7 +138,7 @@ add_dependencies(UserB ${catkin_EXPORTED_TARGETS})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_Drivers.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_smanager.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
