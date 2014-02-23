@@ -5,7 +5,7 @@ project(Drivers)
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS roscpp rospy std_msgs genmsg)
-find_package (Threads)
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -70,15 +70,16 @@ include_directories(
 # add_library(Drivers
 #   src/${PROJECT_NAME}/Drivers.cpp
 # )
+
 # Declare a cpp executable
 add_executable(managerMain src/managerMain.cpp src/SensorManager.cpp src/tinyxml/tinystr.cpp src/tinyxml/tinyxml.cpp src/tinyxml/tinyxmlerror.cpp src/tinyxml/tinyxmlparser.cpp)
-target_link_libraries(managerMain ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(managerMain ${catkin_LIBRARIES})
 
 add_executable(clientSP src/clientMain.cpp src/ConnectionManager.cpp src/OxySmartSpO2.cpp src/Jsoncpp/json_writer.cpp src/Jsoncpp/json_value.cpp src/SPDriver.cpp)
-target_link_libraries(clientSP ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(clientSP ${catkin_LIBRARIES})
 
 add_executable(clientBP src/BPclientMain.cpp src/ConnectionManager.cpp src/Pulsecor.cpp src/SerialPort.cpp src/Jsoncpp/json_writer.cpp src/Jsoncpp/json_value.cpp src/BPDrivers.cpp)
-target_link_libraries(clientBP ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(clientBP ${catkin_LIBRARIES})
 
 add_executable(UserA src/ClientA.cpp)
 target_link_libraries(UserA ${catkin_LIBRARIES})
