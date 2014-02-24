@@ -97,6 +97,11 @@ add_dependencies(UserB ${catkin_EXPORTED_TARGETS})
 # target_link_libraries(smanager_node
 #   ${catkin_LIBRARIES}
 # )
+install(managerMain RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(clientSP RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(clientBP RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(UserA RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(UserB RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
 #############
 ## Install ##
@@ -113,7 +118,7 @@ add_dependencies(UserB ${catkin_EXPORTED_TARGETS})
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS Drivers Drivers_node
+# install(TARGETS smanager smanager_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -138,7 +143,7 @@ add_dependencies(UserB ${catkin_EXPORTED_TARGETS})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_Drivers.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_smanager.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
