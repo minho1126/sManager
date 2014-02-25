@@ -79,6 +79,7 @@ void BPDriver::StartService(){
 				__service_provider.publish(msg);
 				break;
 			}
+			pulsecor.status.measurementError == 0;
 		}
 
 		if (pulsecor.status.currentMode >2 && pulsecor.status.currentMode<6)
