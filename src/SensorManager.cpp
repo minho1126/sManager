@@ -21,7 +21,7 @@ SensorManager::SensorManager(){
 	//to be assigned via file --later
 	manager_Id=1;//default case--change later
 }
-
+//-----------------------------------------------------registering sensors-------------------------------------------------------
 unsigned int SensorManager::RegisterSensor(smanager::RegisterMessage::Request req){
 	if(type_map.find(req.type)==type_map.end()){
 		type_map[req.type]=map<unsigned int,deviceInfo>();
@@ -36,8 +36,10 @@ unsigned int SensorManager::RegisterSensor(smanager::RegisterMessage::Request re
 		type_map[req.type][req.id]=dv;
 		ROS_INFO("registered %s sensor service id: %d",req.type.c_str(),req.id);
 		ROS_INFO("the size now is %d", type_map[req.type].size());
+		//done and return true
 		return 1;
 	}else{
+		//sensor exists
 		return 0;
 	}
 	return 1;
@@ -45,14 +47,16 @@ unsigned int SensorManager::RegisterSensor(smanager::RegisterMessage::Request re
 
 bool SensorManager::foo(smanager::RegisterMessage::Request &req,smanager::RegisterMessage::Response &res){
 	if(RegisterSensor(req)){
+		//if true
 		res.manager_Id=1;
 		return true;
 	}else{
+		//if false
 		res.manager_Id=-1;
 		return true;
 	}
 }
-
+//-----------------------------------------------------registering sensors-------------------------------------------------------
 //handles the requests from the client
 bool SensorManager::listenForRequest(smanager::ServiceRequest::Request &req, smanager::ServiceRequest::Response &res){
 	ROS_INFO("listening to requests");
@@ -64,6 +68,7 @@ bool SensorManager::listenForRequest(smanager::ServiceRequest::Request &req, sma
 		if(dv.stat==REQUESTED){
 			ROS_INFO("request suceesss");
 			res.bid=dv.bid;
+			usedBID.push_back(dv.bid);
 			res.id=dv.id;
 			res.uid=req.uid;
 		}else{
@@ -89,6 +94,7 @@ bool SensorManager::listenForRequest(smanager::ServiceRequest::Request &req, sma
 	//user is stopping the service and ends the session
 	}else if(req.Request.compare("Terminate")==0){
 		ROS_INFO("terminating");
+		contains(type_map[req.type][req.id].bid,true);
 		terminate(type_map[req.type][req.id]);
 		return true;
 	//user stops the service but not ending the session
@@ -101,25 +107,32 @@ bool SensorManager::listenForRequest(smanager::ServiceRequest::Request &req, sma
 		return false;
 	}
 }
-
+//-----------------------------------------------------termination-------------------------------------------------------
 void SensorManager::terminate(deviceInfo& dv){
 	startService(dv,1);
 	service_map[dv.id].shutdown();
 	service_map.erase(dv.id);
 	dv.stat=READY;
 }
-
+//-----------------------------------------------------start service-------------------------------------------------------
 //deviceinfo& a =map...
 //sm.startService(a)
 //0--start
 //1-terminate
 //2-stop
-int SensorManager::startService(deviceInfo& dv,int start){
+//3-other function
+//
+//return 1 for good and return 0 for bad
+int SensorManager::startService(deviceInfo& dv,int start,string command){
 	if(dv.stat==REQUESTED && start==0)
 		dv.stat=IN_USE;
 	ros::NodeHandle m;
 	//create call to driver
 	ROS_INFO("%s is device info",dv.Servicename.c_str());
+	if(dv.Servicename.length()==0){
+		ROS_INFO("nothing selected");
+		return 0;
+	}
 	ros::ServiceClient ServiceRequest=m.serviceClient<smanager::ServiceRequest>(dv.Servicename+"_request");
 	ROS_INFO("registering to \"%s_request\"",dv.Servicename.c_str());
 	smanager::ServiceRequest srv;
@@ -133,6 +146,9 @@ int SensorManager::startService(deviceInfo& dv,int start){
 	}else if(start==2){
 		ROS_INFO("request is pause");
 		srv.request.Request="Stop";
+	}else if(start==3 && command.length()!=0){
+		ROS_INFO("request is default");
+		srv.request.Request=command;
 	}else{
 		ROS_INFO("unidetified request");
 		return 0;
@@ -187,7 +203,7 @@ bool deviceInfo::operator== (deviceInfo dI){
 	else
 		return false;
 }
-
+//-----------------------------------------------------listing sensors-------------------------------------------------------
 void SensorManager::listSensors(){
 	map<string,map<unsigned int,deviceInfo> >::iterator iter;
 	map<unsigned int,deviceInfo>::iterator iter2;
@@ -205,19 +221,25 @@ void SensorManager::listActiveServices(){
 		ROS_INFO("service id:%d",iter->first);
 	}
 }
-
-deviceInfo& SensorManager::findAvailable(string type){
+//--------------------------------------------------finding available sensors-------------------------------------------------------
+deviceInfo& SensorManager::findAvailable(string type,int bid){
 	//map<unsigned long,deviceInfo> temp=type_map[type];
 	listSensors();
 	map<unsigned int,deviceInfo>::iterator iter;
-	ROS_INFO("map size is %d for %s", type_map[type].size(),type.c_str());
+	//ROS_INFO("map size is %d for %s", type_map[type].size(),type.c_str());
+	ROS_INFO("Requesting for available %s sensor with %d",type.c_str(),bid);
 	for(iter=type_map[type].begin();iter !=type_map[type].end();++iter){
 		ROS_INFO("aaa");
-		if(iter->second.stat==READY){
-			deviceInfo& dv=iter->second;
-			ROS_INFO("allocating sensor id:%u",dv.id);
-			return dv;
+		//if status is ready to use and not int the usedbid list
+		if(iter->second.stat==READY && !contains(bid)){//
+			//if any or as specified sensor
+			if((bid==-1 && iter->second.bid!=0)|| iter->second.bid==bid){
+				deviceInfo& dv=iter->second;
+				ROS_INFO("allocating sensor id:%u",dv.id);
+				return dv;
+			}
 		}
+		ROS_INFO("bid may be in use");
 	}
 	deviceInfo inv;
 	inv.stat=INVALID;
@@ -225,7 +247,7 @@ deviceInfo& SensorManager::findAvailable(string type){
 	ROS_INFO("could not allocate an available sensor"); 
 	return dv;
 }
-//
+//-------------------------------------------------------mark test to be available-------------------------------------------------------
 deviceInfo& SensorManager::initialiseService(ros::NodeHandle n,string type){
 	//alocateService
 	deviceInfo& dv=findAvailable(type);
@@ -245,7 +267,7 @@ deviceInfo& SensorManager::initialiseService(ros::NodeHandle n,string type){
 	service_map[dv.id]=sub;
 	return dv;
 }
-
+//---------------------------------------------------------------------------------------------------------------------
 //for testing purpose
 void SensorManager::Resultcallback(smanager::data msg){
 	ROS_INFO("called");
@@ -257,16 +279,17 @@ void SensorManager::Resultcallback(smanager::data msg){
 void SensorManager::Deregister(string type,unsigned int id){
 	type_map[type].erase(id);
 }
-//checking if a device is still connected to the manager
+//--------------------------------------checking if a device is still connected to the manager------------------------------------------
 void SensorManager::Ping(){
 	ros::NodeHandle n;
 	map<string,map<unsigned int,deviceInfo> >::iterator iter;
 	map<unsigned int,deviceInfo>::iterator iter2;
-	ROS_INFO("typemap size%d",type_map.size());
+	ROS_INFO("typemap size %d",type_map.size());
 	for(iter=type_map.begin();iter !=type_map.end();++iter){
 		if(iter->second.empty()){
 			ROS_INFO("there are no %s device connected to the manager",iter->first.c_str());
-			return;
+			type_map.erase(iter->first);
+			continue;
 		}
 		for(iter2=iter->second.begin();iter2 != iter->second.end();++iter2){
 			ROS_INFO("pinging service id:%d, sensor bid:%d",iter2->second.id, iter2->second.bid);
@@ -281,6 +304,7 @@ void SensorManager::Ping(){
 			}else{
 				ROS_INFO("nothere");
 				//deregister
+				contains(iter2->second.bid,true);
 				Deregister(iter->first,iter2->second.id);
 			}
 		}
@@ -297,6 +321,22 @@ void SensorManager::pause(deviceInfo& dv){
 	ROS_INFO("stopping...part2 %s",dv.Servicename.c_str());
 	startService(dv,2);
 }
+
+bool SensorManager::contains(int bid,bool deleteMode){
+	ROS_INFO("current size is %d",usedBID.size());
+	for(int i=0;i<usedBID.size();i++){
+		if(usedBID[i]==bid){
+			if(deleteMode){
+				//ROS_INFO("contained");
+				usedBID.erase(usedBID.begin()+i);
+			}
+			return true;
+		}
+	}
+	//ROS_INFO("not contained");
+	return false;
+}
+
 /*
 bool SensorManager::RegisterUser(unsigned int uid){
 	map<unsigned int, userInfo>::iterator iter;

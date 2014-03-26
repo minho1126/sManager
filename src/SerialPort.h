@@ -12,6 +12,8 @@
 #include <unistd.h>
 #include <cstdlib>
 #include <string.h>
+#include <dirent.h>
+
 
 #define EXAMPLE_PORT "/dev/ttyUSB0"
 
@@ -21,7 +23,7 @@ class SerialPort
 {
 public:
 	SerialPort(void);
-	void initialiseSerialPort(int baudRate);
+	bool initialiseSerialPort(int baudRate);
 	int	openComPort(int comPort);
 	int readThread();
 	int close();
@@ -33,7 +35,7 @@ public:
 	//DCB dcb;//= {0};
 	struct termios oldtio, newtio;
 	char input[10000]; //buffer for debug 
-
+	string findtty();
 	unsigned long dwRead, dwWritten;
 	unsigned long lpEvtMask;
 	//COMMTIMEOUTS cto;

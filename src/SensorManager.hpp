@@ -4,6 +4,7 @@
 #include "smanager/ServiceRequest.h"
 #include "smanager/data.h"
 #include <map>
+#include <vector>
 #include <string>
 
 using namespace std;
@@ -25,9 +26,9 @@ class SensorManager{
 		bool foo(smanager::RegisterMessage::Request &req,smanager::RegisterMessage::Response &res);
 		string XmlParser();
 		bool listenForRequest(smanager::ServiceRequest::Request &req, smanager::ServiceRequest::Response &res);
-		int startService(deviceInfo& dv,int start=0);
+		int startService(deviceInfo& dv,int start=0,string command="");
 		void terminate(deviceInfo& dv);
-		deviceInfo& findAvailable(string type);
+		deviceInfo& findAvailable(string type, int bid=-1);
 		void listSensors();
 		void listActiveServices();
 		deviceInfo& initialiseService(ros::NodeHandle n,string type);
@@ -35,10 +36,12 @@ class SensorManager{
 		void Ping();
 		void Deregister(string type,unsigned int id);
 		void pause(deviceInfo& dv);
+		bool contains(int bid,bool deleteMode=false);
 	private:
 		int manager_Id;
 		map<string, map<unsigned int,deviceInfo> >type_map;//<BP ,<id,device>>
 		map<unsigned int,ros::Subscriber> service_map;
+		vector<int> usedBID;
 		ros::Subscriber tempsub;
 };
 

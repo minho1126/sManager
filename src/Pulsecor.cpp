@@ -110,7 +110,10 @@ int Pulsecor::connectToDevice(int dir)
 //		for (size_t i=0; i<ports.size(); i++)
 //		  _tprintf(_T("COM%d <%s>\n"), ports[i], friendlyNames[i].c_str());
 //	}
-	serial.initialiseSerialPort(9600);	
+	bool Done = serial.initialiseSerialPort(9600);
+	if(!Done){
+		return -1;
+	}
 	bool Connected  = false;
 	char* zComNum = new char[20];
 	std::string zComName = "";

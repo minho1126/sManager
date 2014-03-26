@@ -373,3 +373,7 @@ string OxySmartSpO2::findtty(){
 		}
 	}
 }
+
+void OxySmartSpO2::closeConnection(){
+	::close(hComm);
+}

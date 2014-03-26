@@ -8,8 +8,32 @@ SerialPort::~SerialPort(void)
 {
 }
 
+string SerialPort::findtty(){
+	string name="ttyUSB";
+	DIR* dirp=opendir("/dev");
+	while(dirp){
+		int errno=0;
+		dirent* dp=readdir(dirp);
+		if(dp!=NULL){
+			cout<<dp->d_name<<endl;
+			string fileName(dp->d_name);
+			if(fileName.find(name)==0 && access(("/dev/"+fileName).c_str(),F_OK)!=-1){
+				//cout<<"found"<<endl;
+				closedir(dirp);
+				return fileName;
+			}
+		}else{
+			if(errno==0){
+				closedir(dirp);
+				return "";
+			}
+			closedir(dirp);
+			return "";
+		}
+	}
+}
 
-void SerialPort::initialiseSerialPort(int baudRate){
+bool SerialPort::initialiseSerialPort(int baudRate){
 
 	dwRead = 0;
 
@@ -22,12 +46,19 @@ void SerialPort::initialiseSerialPort(int baudRate){
 	//cto.ReadTotalTimeoutMultiplier = 0;
 	//cto.WriteTotalTimeoutConstant = 100;
 	//cto.WriteTotalTimeoutMultiplier = 0;
-    hComm=open(EXAMPLE_PORT, O_RDWR|O_NOCTTY);
-    cout<<endl<<EXAMPLE_PORT<<" "<<hComm<<endl;
-    if(hComm<0){
-		perror(EXAMPLE_PORT);
+	string devicename=findtty();
+	if(devicename.compare("")==0){
 		cout<<"connection doesnt exist"<<endl;
-		exit(-1);
+		return false;
+	}else{
+		devicename="/dev/"+devicename;
+	}
+    hComm=open(devicename.c_str(), O_RDWR|O_NOCTTY);
+    cout<<endl<<devicename.c_str()<<" "<<hComm<<endl;
+    if(hComm<0){
+		perror(devicename.c_str());
+		cout<<"file cannot be opened"<<endl;
+		return false;
 	}
 	
 	tcgetattr(hComm,&oldtio);
@@ -67,6 +98,7 @@ void SerialPort::initialiseSerialPort(int baudRate){
 	tcflush(hComm,TCIFLUSH);
 	cfsetospeed(&newtio, B9600);
 	tcsetattr(hComm,TCSANOW,&newtio);
+	return true;
 }
 
 

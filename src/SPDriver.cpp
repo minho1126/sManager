@@ -74,7 +74,7 @@ bool SPDriver::InitialiseService(smanager::ServiceRequest::Request &req,
 	if(req.Request.compare("Request")==0){
 		if(!initialisingDevice()){
 			ROS_INFO("failed to initialise");
-			res.Response="Failed";
+			res.Response="notConnected";
 			return true;
 		}
 		res.Response="Ready";
@@ -95,6 +95,8 @@ bool SPDriver::InitialiseService(smanager::ServiceRequest::Request &req,
 		res.Response="Terminate";
 		ROS_INFO("Terminated");
 		terminateService();
+		ROS_INFO("closing connection");
+		spo2.closeConnection();
 	}
 	 return true;
  }
