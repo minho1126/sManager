@@ -64,7 +64,7 @@ bool SensorManager::listenForRequest(smanager::ServiceRequest::Request &req, sma
 	if(req.Request.compare("Request")==0){
 		ROS_INFO("REQUESTING");
 		ros::NodeHandle n;
-		deviceInfo& dv=initialiseService(n,req.type);
+		deviceInfo& dv=initialiseService(n,req.type,req.bid);
 		if(dv.stat==REQUESTED){
 			ROS_INFO("request suceesss");
 			res.bid=dv.bid;
@@ -233,7 +233,7 @@ deviceInfo& SensorManager::findAvailable(string type,int bid){
 		//if status is ready to use and not int the usedbid list
 		if(iter->second.stat==READY && !contains(bid)){//
 			//if any or as specified sensor
-			if((bid==-1 && iter->second.bid!=0)|| iter->second.bid==bid){
+			if((bid==0 && iter->second.bid!=0)|| (iter->second.bid==bid && iter->second.bid!=0)){
 				deviceInfo& dv=iter->second;
 				ROS_INFO("allocating sensor id:%u",dv.id);
 				return dv;
@@ -248,9 +248,9 @@ deviceInfo& SensorManager::findAvailable(string type,int bid){
 	return dv;
 }
 //-------------------------------------------------------mark test to be available-------------------------------------------------------
-deviceInfo& SensorManager::initialiseService(ros::NodeHandle n,string type){
+deviceInfo& SensorManager::initialiseService(ros::NodeHandle n,string type, int bid){
 	//alocateService
-	deviceInfo& dv=findAvailable(type);
+	deviceInfo& dv=findAvailable(type,bid);
 	if(dv.stat==INVALID){
 		dv.stat=INVALID;
 		ROS_INFO("couldnt find anything failed to init");

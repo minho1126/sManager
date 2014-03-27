@@ -1,4 +1,4 @@
-#include "SPDriver.hpp"
+#include "MasimoDriver.hpp"
 #include "OxySmartSpO2.h"
 #include <iostream>
 #include <unistd.h>
@@ -15,40 +15,27 @@
 #include <string>
 #include <sstream>
 #include <pthread.h>
-#include <fstream>
 
 //#include "jsoncpp-src-0.50/"
 using namespace std;
 
-SPDriver::SPDriver(){
+MasimoDriver::MasimoDriver(){
 	__name="OxySmartSp02";
-	__type="SPO2";//type can only be SPO2, BP
+	__type="Masimo";//type can only be SPO2, BP
 	__ipAddress="127.0.0.1";//example
 	__id =generateID();
-	//read bid
-	std::ifstream infile;
-	infile.open("~/settings.txt");
-	if(!infile.is_open()){
-		ROS_INFO("no setup file");
-		__bid=1;
-	}else{
-		infile >> __bid;
-		//__bid=1;//example
-		infile.close();
-	}
-	ROS_INFO("bid is %d",__bid);
-	///////
+	__bid=1;//example
 	__provide_Service=false;
 	__pause=false;
 	isFresh=false;
 	isConnected=false;
 }
 
-void SPDriver::StartService(){
+void MasimoDriver::StartService(){
 	smanager::data msg;
 	pthread_t t; 
 	int* i;
-	pthread_create(&t,NULL,&SPDriver::updateReadingsThread,this);
+	pthread_create(&t,NULL,&MasimoDriver::updateReadingsThread,this);
 	ROS_INFO("ENTERING WHILE LOOP");
 	while(__processing){
 		if(!isFresh){
@@ -57,11 +44,11 @@ void SPDriver::StartService(){
 				continue;
 		}
 		//sleep(1);
-		if(spo2.pulseRate > 0 && spo2.spo2Percent > 0.0 && ((int) spo2.spo2Percent) < 126){
+		if(spo2.bpm > 0 && spo2.SPO2 > 0.0 && ((int) spo2.SPO2) < 126){
 			//sleeping
 			Json::Value val;
-			jsonWriter("spo2",spo2.spo2Percent,val);
-			jsonWriter("bpm",spo2.pulseRate,val);
+			jsonWriter("spo2",spo2.SPO2,val);
+			jsonWriter("bpm",spo2.bpm,val);
 			//stringstream aaa;
 			//aaa << "OxySmart spo2 is " << spo2.spo2Percent <<  " bpm is " << spo2.pulseRate;
 			string out=jsonOutput(val);
@@ -75,13 +62,13 @@ void SPDriver::StartService(){
 	}
 }
 
-bool SPDriver::checkDeviceConnection(){
+bool MasimoDriver::checkDeviceConnection(){
 	//stub
 	return true;
 }
 
 
-bool SPDriver::InitialiseService(smanager::ServiceRequest::Request &req,
+bool MasimoDriver::InitialiseService(smanager::ServiceRequest::Request &req,
  smanager::ServiceRequest::Response &res){
 	//request to start
 	if(req.Request.compare("Request")==0){
@@ -115,7 +102,7 @@ bool SPDriver::InitialiseService(smanager::ServiceRequest::Request &req,
  }
 
 
-bool SPDriver::is_Started(){
+bool MasimoDriver::is_Started(){
 	if(__provide_Service==true){
 		__provide_Service=false;
 		__processing=true;
@@ -126,15 +113,15 @@ bool SPDriver::is_Started(){
 }
 
 
-bool SPDriver::terminateService(){
+bool MasimoDriver::terminateService(){
 	__processing=false;
 	return true;
 }
 
 
-bool SPDriver::initialisingDevice(){
+bool MasimoDriver::initialisingDevice(){
 	//initialise the device
-	spo2.initialiseDevice();
+	spo2.InitialiseDevice1();
 	if(!spo2.Connected){
 		ROS_INFO("error-please reconnect the device");
 		return false;
@@ -143,15 +130,15 @@ bool SPDriver::initialisingDevice(){
 	return true;
 }
 
-void* SPDriver::updateReadingsThread(void* threadid){
+void* MasimoDriver::updateReadingsThread(void* threadid){
 	ROS_INFO("start reading");
-	SPDriver* cm=(SPDriver*)threadid;
+	MasimoDriver* cm=(MasimoDriver*)threadid;
 	cm->updateReadings();
 	ROS_INFO("finished reading");
 	pthread_exit(NULL);
 }
 
-void SPDriver::updateReadings(){
+void MasimoDriver::updateReadings(){
 	ROS_INFO("entering loop");
 	while(__processing){
 		spo2.updateReadings();
@@ -159,6 +146,6 @@ void SPDriver::updateReadings(){
 	}
 }
 
-void SPDriver::stopMeasurement(){
+void MasimoDriver::stopMeasurement(){
 	terminateService();
 }

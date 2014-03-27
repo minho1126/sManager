@@ -28,10 +28,10 @@ class SensorManager{
 		bool listenForRequest(smanager::ServiceRequest::Request &req, smanager::ServiceRequest::Response &res);
 		int startService(deviceInfo& dv,int start=0,string command="");
 		void terminate(deviceInfo& dv);
-		deviceInfo& findAvailable(string type, int bid=-1);
+		deviceInfo& findAvailable(string type, int bid=0);
 		void listSensors();
 		void listActiveServices();
-		deviceInfo& initialiseService(ros::NodeHandle n,string type);
+		deviceInfo& initialiseService(ros::NodeHandle n,string type,int bid =0);
 		void Resultcallback(smanager::data msg);
 		void Ping();
 		void Deregister(string type,unsigned int id);
