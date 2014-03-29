@@ -15,6 +15,7 @@
 #include <string>
 #include <sstream>
 #include <pthread.h>
+#include <fstream>
 
 //#include "jsoncpp-src-0.50/"
 using namespace std;
@@ -24,7 +25,19 @@ MasimoDriver::MasimoDriver(){
 	__type="Masimo";//type can only be SPO2, BP
 	__ipAddress="127.0.0.1";//example
 	__id =generateID();
-	__bid=1;//example
+	//read bid
+	std::ifstream infile;
+	infile.open("~/settings.txt");
+	if(!infile.is_open()){
+		ROS_INFO("no setup file");
+		__bid=1;
+	}else{
+		infile >> __bid;
+		//__bid=1;//example
+		infile.close();
+	}
+	ROS_INFO("bid is %d",__bid);
+	///////
 	__provide_Service=false;
 	__pause=false;
 	isFresh=false;
