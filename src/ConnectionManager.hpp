@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <string.h>
 #include <vector>	
@@ -18,7 +19,7 @@ class ConnectionManager{
 		unsigned int generateID();
 		string getServiceName();
 		virtual bool InitialiseService(smanager::ServiceRequest::Request &req,smanager::ServiceRequest::Response &res)=0;
-		bool is_Started();
+		virtual bool is_Started()=0;
 		int pid;
 		virtual bool terminateService()=0;
 		virtual bool initialisingDevice()=0;
@@ -27,6 +28,8 @@ class ConnectionManager{
 		void jsonWriter(string name,int i,Json::Value& val);
 		string jsonOutput(Json::Value val);
 		virtual void stopMeasurement()=0;
+		string portScanner();
+		string getRequestname();
 	protected:
 		bool isFresh;
 		bool isConnected;

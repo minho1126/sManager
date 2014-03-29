@@ -133,8 +133,11 @@ int SensorManager::startService(deviceInfo& dv,int start,string command){
 		ROS_INFO("nothing selected");
 		return 0;
 	}
-	ros::ServiceClient ServiceRequest=m.serviceClient<smanager::ServiceRequest>(dv.Servicename+"_request");
-	ROS_INFO("registering to \"%s_request\"",dv.Servicename.c_str());
+	stringstream ss;
+	ss<<dv.Servicename<<"_request_"<<dv.id;
+	string requestname=ss.str();
+	ros::ServiceClient ServiceRequest=m.serviceClient<smanager::ServiceRequest>(requestname);
+	ROS_INFO("registering to \"%s\"",requestname.c_str());
 	smanager::ServiceRequest srv;
 	//what is the request
 	if(start==0){

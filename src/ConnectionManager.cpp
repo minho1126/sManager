@@ -21,7 +21,7 @@ using namespace std;
 
 ConnectionManager::ConnectionManager(){
 	//__name="OxySmartSp02";
-	//__type="SPO2";//type can only be SPO2, BP
+	__type="deviceDriver";//type can only be SPO2, BP
 	//__ipAddress="127.0.0.1";//example
 	//__id =generateID();
 	//__bid=1;//example
@@ -116,4 +116,43 @@ string ConnectionManager::jsonOutput(Json::Value val){
 	// write in a nice readible way
 	Json::StyledWriter styledWriter;
 	return styledWriter.write(val);
+}
+
+string ConnectionManager::portScanner(){
+	string bbb;
+	char buff[1000];
+	FILE *fp = popen("lsusb|grep ATEN","r");
+	while ( fgets( buff, BUFSIZ, fp ) != NULL ) {
+		//printf("%s", buff );
+		string aaa(buff);
+		bbb="BP";
+		cout<<"BP"<<endl;
+		return bbb;
+	}
+	fp = popen("lsusb|grep CP210x","r");
+	while ( fgets( buff, BUFSIZ, fp ) != NULL ) {
+		//printf("%s", buff );
+		string aaa(buff);
+		bbb="SPO2";
+		cout<<"SPO2"<<endl;
+		return bbb;
+	}
+	fp = popen("lsusb|grep Prolific","r");
+	while ( fgets( buff, BUFSIZ, fp ) != NULL ) {
+		//printf("%s", buff );
+		string aaa(buff);
+		bbb="Masimo";
+		cout<<"Masimo"<<endl;
+		return bbb;
+	}
+	if(bbb.length()==0){
+		cout<<"nothing"<<endl;
+		return "";
+	}
+}
+
+string ConnectionManager::getRequestname(){
+	stringstream ss;
+	ss<<__type<<"_request_"<<__id;
+	return ss.str();
 }

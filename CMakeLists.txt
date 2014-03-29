@@ -83,6 +83,9 @@ target_link_libraries(clientBP ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 add_executable(clientMasimo src/MasimoMain.cpp src/ConnectionManager.cpp src/masimo_rad8.cpp src/Jsoncpp/json_writer.cpp src/Jsoncpp/json_value.cpp src/MasimoDriver.cpp)
 target_link_libraries(clientMasimo ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
+add_executable(dDriver src/DeviceDriver.cpp src/ConnectionManager.cpp src/masimo_rad8.cpp src/Jsoncpp/json_writer.cpp src/Jsoncpp/json_value.cpp src/MasimoDriver.cpp src/BPDrivers.cpp src/Pulsecor.cpp src/SerialPort.cpp src/OxySmartSpO2.cpp src/SPDriver.cpp)
+target_link_libraries(dDriver ${catkin_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+
 add_executable(UserA src/ClientA.cpp)
 target_link_libraries(UserA ${catkin_LIBRARIES})
 
@@ -92,9 +95,10 @@ target_link_libraries(UserB ${catkin_LIBRARIES})
 ## Add cmake target dependencies of the executable/library
 ## as an example, message headers may need to be generated before nodes
 add_dependencies(managerMain ${catkin_EXPORTED_TARGETS})#smanager_generate_messages_cpp)
-add_dependencies(clientSP ${catkin_EXPORTED_TARGETS} settings.txt)
+add_dependencies(clientSP ${catkin_EXPORTED_TARGETS})
 add_dependencies(clientBP ${catkin_EXPORTED_TARGETS})
 add_dependencies(clientMasimo ${catkin_EXPORTED_TARGETS})
+add_dependencies(dDriver ${catkin_EXPORTED_TARGETS})
 add_dependencies(UserA ${catkin_EXPORTED_TARGETS})
 add_dependencies(UserB ${catkin_EXPORTED_TARGETS})
 ## Specify libraries to link a library or executable target against
@@ -105,6 +109,7 @@ install(TARGETS managerMain RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION
 install(TARGETS clientSP RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(TARGETS clientBP RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(TARGETS clientMasimo RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
+install(TARGETS dDriver RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(TARGETS UserA RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 install(TARGETS UserB RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
