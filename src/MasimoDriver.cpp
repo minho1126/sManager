@@ -22,7 +22,7 @@ using namespace std;
 
 MasimoDriver::MasimoDriver(){
 	__name="OxySmartSp02";
-	__type="Masimo";//type can only be SPO2, BP
+	__type="SPO2";//type can only be SPO2, BP
 	__ipAddress="127.0.0.1";//example
 	__id =generateID();
 	//read bid
