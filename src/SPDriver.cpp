@@ -27,7 +27,7 @@ SPDriver::SPDriver(){
 	__id =generateID();
 	//read bid
 	std::ifstream infile;
-	infile.open("~/settings.txt");
+	infile.open("settings.txt");
 	if(!infile.is_open()){
 		ROS_INFO("no setup file");
 		__bid=1;
