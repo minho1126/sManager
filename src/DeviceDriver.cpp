@@ -88,7 +88,7 @@ int main(int argc,char **argv){
 	stringstream ss;
 	ss<<"devicedriver_"<<generateID();
 	string sensor=portScanner();
-	cout<<sensor<<endl;
+	ROS_INFO("%s",sensor.c_str());
 	ros::init(argc,argv,ss.str());
 	ros::NodeHandle n,m;
 	string bbb;
@@ -141,7 +141,7 @@ int main(int argc,char **argv){
 			
 			
 		}else{
-			cout<<"nothing"<<endl;
+			ROS_INFO("nothing");
 			sleep(1);
 			sensor=portScanner();
 			continue;
